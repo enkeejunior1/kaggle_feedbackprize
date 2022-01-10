@@ -1,0 +1,39 @@
+TEACHER_NAME,
+
+Recently there has been word of limiting the sports to only the people who hold B and above averages.
+
+I do not agree with this new policy.
+
+Pushing students to strive to get better grades is good, in fact, it's a, must.
+
+But it is also important for the kids to be able to enjoy what they want, and this should be segregated from extra-curricular activities.
+
+Living in modern society presents the easy access to unhealthy foods.
+
+Children, especially in middle school, need to eat, and exercise well to be healthy in life.
+
+Many diet and exercise patterns are developed in this stage of life.
+
+Banning students with C and below averages from sports will not help them with school, but interfere with their studies, as exercise stimulates the brain, and can help the students in their studies.
+
+Limiting clubs to only B students and above is not helpful either.
+
+During middle school, many interests that will be pursued later in life are established.
+
+If we limit these clubs to only a minority of students, then this will not only be unhelpful to the club, it will stunt the students' ability to expand on the subject that interests them.
+
+These clubs are sometimes taught by the teachers, and are mostly closely related to the class that they teach.
+
+If the clubs are limited to only A and B average students, then the interest of the students' in that class may decrease.
+
+Students do need motivation to get better grades, but limiting the school provided extracurricular activities is not motivation, but a punishment, and perhaps even borders on the edge of discrimination.
+
+Motivation should be done on a case by case basis, and not by a one size fits all rule.
+
+I understand your motives, TEACHER_NAME, but I do not agree.
+
+Extracurricular activities should not be effected by a student's school grades.
+
+Sincerely,
+
+STUDENT_NAME            

@@ -1,0 +1,13 @@
+Hundreds of teens each year die from texting,dinking, talking to passenger, while driving or even die somthing as simple as to paying attention. Driving is not for everyone.
+
+Driverless car will prevent many accidents due to people mistake. Which are normal we make mistakes, But with the vechile watching our steps or even driving for us would be a benfit for that driver.
+
+Google states "google cars have driven more than half a million miles without a crash". The cars aren't compeletly driverless; they can steer, accelerate, and brake themselves, but all are designed to notify the driver when the road ahead requires human skills. Why would anyone want a driverless car that still needs a driver? your probably asking, although, the human driver must remain alert and be ready to take over when the situation requires such as navigating through work zones and around accidents, until then they are free to text with a cell phone, call someone withour stoping. In this way, the driverless car is actually a safety feature.
+
+How the car does this is with position-estimating sensors on the left rear wheel, a rotating sensor on the roof, a video camera mounted near the rearview mirror, four automotive radar sensors, a GPS receiver, and an inertial motion sensor.
+
+But the most important piece is the LIDAR(spinning sensor on the roof), it uses laser beams to form a constantly updating 3-D model of the cars surroundings. The combination of all is necessary for the driverless car to replicate the skill of a person at the wheel.
+
+Even when the car require the driver aid, displays can be turned off instantly when the driver needs to take over. GM has developed drivers seats that vibrate when the vehicle is in danger of backing into an object. The Google car simply announces when the driver should be prepared to take over. Other options under consideration are flashing lights on the windshield and other heads-up displays.
+
+Over all I see benfit in having driverless cars, They driverless cars allow us to complete as task such as putting on make up or text messaging someone, but they can still allow us to take over if needed. Which means that we do not put our live compeletly in the mercy of ours cars, but rather allow the car and the driver to work as together.

@@ -1,0 +1,5 @@
+Do you believe that there is a computer that can examine you on how your feeling? Well believe it or not, there is a computer that can identify your emotions. In the article " Making Mona Lisa Smile" the author describes how a new technology called the Facial Action Coding System enables computers to identify human emotions. Here's the big question, do you really think this technology is valuable to read the emotional expressions of students in a classroom?
+
+The Facial Action Coding System is a system for the computer to read your facial expressions. In paragraph 3, the author states," The process begins when the computer constructs a 3-D computer model of the face; all 44 muscles must move human like." A movement of one or more muscle is called an "action unit". The authour also mentions that Eckman has classified six basic emotions which include happiness, surprise, anger, disgust, fear, and sadness.
+
+My opinion on the technology to read th eemotional expressions of students in a classroom is not valuable. Studens might not like the idea of it. 
