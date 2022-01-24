@@ -1,9 +1,0 @@
-This would not be denifical in a classroom because it would make students uncomfortable knowing something is watching them, this would need its own computer to run, and it could not handle 30 people at a time.
-
-First, people dont like being spyed on so having a computer program watching them all day would get some people feeling scared or unconfortable.
-
-Second, the actical siad home computers cant handle the complex algorithms, and school computers are old and not as good as most computers at home so they would need a dedicated computer just for this program.
-
-Finaly, the artical siad it counted action point based off mussel movement up to 44 for one person, but for a class of 30 people it would have to find individual people and measure their mussel movement independently from everyone else.
-
-So, this program would not be useful because people would get uncomfortable, the space, cost and proccessing power need to run the program, and individual detection is needed before it can be used for a class room.

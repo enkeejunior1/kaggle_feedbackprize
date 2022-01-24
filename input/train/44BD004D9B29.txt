@@ -1,9 +1,0 @@
-The Facial Action Coding System a new technology that helps you to understand human emotions, it can calculate the movement of the major muscles of your face, it can recognize six basic emotions, and it can make a difference beetwen a real and a fake emotion
-
-First, The Facial Action Coding System can calculate the movement of the muscles of your face, the software has a process that begins by making a model of your face in third dimension including 44 the major muscles of your face, after associate the movement of your muscles with a face that has no emotion then it know what was the movement of every muscle from its normal position to the position that has when there is a emotion.
-
-Second, it can recognize six basic emotions, the six basics emotion that the software can recognize is: happines, surprise, anger, disgust, fear, and sadness. how it works? well it recognizes every muscle and analyzes the movement that every muscle makes when you have an emotion, that means that there are predeterminated movements and the software associate the movements of your face and the prederminated movements for every emotion.
-
-Finally, it can make a difference between a real and a fake emotion, it means that the software is capable to recognize natural movements of your face and forced movements, it is a helpful characteristic because the software cannot have a mistake when it is analyzing emotions.
-
-In Summary, the software has enough capacitiy to recognize, the movements of your face, Recognize six emotions, difference between a real and a fake expresion, it means that it just need to add more emotions and improve the analyzing of faces and the software would be helpful.     

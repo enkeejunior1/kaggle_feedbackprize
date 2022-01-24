@@ -1,9 +1,0 @@
-What do you think about driverless cars? Are they safe? Well Google's driverless cars drive by themselves. But they're not truly driverless. The car still alerts the driver to take over the car when pulling in and out of driveways or dealing with complicated traffic issues, such as navigating through roadwork or accidents. I believe that the cars may be dangerous in some cases.
-
-First of all, the car has to alert the driver when the driver needs to take over the wheel and control the vehicle. Many futurists believed the key to developing the self- driving cars someday wasn't so much smart cars as smarter roads.
-
-Secondly, the car may possibly be a good idea. There are many sensors all around the car. It has a sensor on the left rear wheel, a rotating sensor on the roof, a video camera mounted near the rearview mirror, four automotive radar sensors, a GPS reciever, and an inertial motion sensor. So the car is very aware of any dangers it may come in contact with. The information from the sensors can cause the car to apply brakes on individual wheels and reduce power from the engine, allowing far better response and control than a human driver could manage alone.
-
-Last, but not least, the car can handle driving functions at speeds up to 25 mph, but special touch sensors make sure the driver keeps hold of the wheel. None of the "driverless cars" actually developed as diverless. They can steer, accelerate, and brake themselves, but all the cars are in fact designed to notify the driver when the road ahead requires human skills, such as navigating through work zones and around accidents. So therefore, the human driver has to remain alert and be ready to take over the car when the situation requires.
-
-In conclusion, I think that the driverless cars aren't safe. Although, I understand that some people think that the sensors and the car notifying the driver can help the driver when there's caution ahead.

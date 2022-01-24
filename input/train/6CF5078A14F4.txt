@@ -1,7 +1,0 @@
-I think the Facial Coding System is valuable for students in a classroom because then it could recognize students emotions. "A classroom computer could recognize when a student is becoming confused or bored" Dr. Huang predicts. Then it could modify the lesson, like an effective human instructor." Most human communication is nonverbal, including emotional communication, " notes Dr. Huang."
-
-The Facial Coding System is a 3-D computer model of the face. Eckmen, the creator of the Facing Coding System, classifies six basic emotions including, happiness, surprise, anger, disgust, fear, and saddness. Then, he associates them with characterisric movements of the facial muscles. For example, your frontalis pars lateralis muscle raises your eyebrows when you're surprised; your orbicularis oris tightens your lips to show anger.
-
-"The facial expressions for each emotion are universal, observes Dr. Huang, even though individuals often show varying degress of expression" (like not smiling as broadly). The new emotion-recognition software tracks these facial movements-in a real face or in a painted face of Mona Lisa. The software can even identify mixed emotions.
-
-This helps to know how students are feeling.                  

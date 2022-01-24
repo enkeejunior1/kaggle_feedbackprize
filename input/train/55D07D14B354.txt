@@ -1,7 +1,0 @@
-The article talks about Prof. Thomas Huang of the University of Illinois working in collabration with Prof. Nicu Sebe of the University of Amsterdam developing a software that can read people emotions. They have tested this software on the painting of Leonardo da Vinci's painting called Mona Lisa
-
-I think we can use this software in classrooms read students emotions. This could tell us how the students are feeling about the topic that they are working or they are about move onto. In the aritcle it talks about Mona Lisa "Shes 83 percent happy, 9 percent disgusted, 6 percent fearful, and 2 percent angry. Its the subject of Leonardo da Vincis Renaissance painting, Mona Lisa at least according to some new computer software that can recognize emotions.
-
-This could tell us how the students are feeling about the topic that they are working or they are about move onto. This could also tell wether the student has a question or let us that the student might not understand the topic. If schools use this software, our numbers in passing the test could go higher up.
-
-This could tell us how much is a student interested in the topic. We can use this software in colleges to like if the student is interested in the class or is being forced by his/her parents to take that class. 

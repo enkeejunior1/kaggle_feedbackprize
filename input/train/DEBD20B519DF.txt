@@ -1,5 +1,0 @@
-I think that this technology would be valuable. The Facial Action Coding System was created by Dr. Paul Eckman. It is a computer software that can detect 6 simply emotions depending on your facial expression. The software uses video imagery and then weighs different units to identify emotions. I believe it is something that would be valuable.
-
-I believe it would be valuable because according to Dr. Huang, depending on how a student is feeling during a lesson, the software could modify the lesson almost like an actual teacher. Most humans tend to not stay engaged in something if they aren't having fun. The software would be able to make the lesson more engaging and would want students to learn more.
-
-The Facial Action Coding system is a tool can also detect painting emotions as well. But mainly could help communicate to a teacher when students aren't engaged. I think that it would be a very valuable tool if used correctly. 
