@@ -1,0 +1,13 @@
+INTRODUCTION
+
+The Mona Lisa is one paint that is famous in the world, according to some new computer software can reconise emotions in people, this system is a innovation of Prof. Thomas Haung, of the Beckman and is working with Prof. Nicu Sebe, they will have help from Dr. Paul Eckman institute of Advanced Science at the University of Illinois man, creator crator of FACS.
+
+BODY
+
+This system has some questions that people thikn, howcan a computer recognize subtle facial movements we humans use to express how we feel? Dr. Haung said that the procces begins when the computer structs a 3-D computer model of the face; all 44 major muscles in the model must move like human muscles. Dr. Eckman has classified six basic emotions- happiness, surprise, anger, disgust, fear, and sadness - and then assosiated each with characteristic movements of the facial muscles. "The facial expressions for each emotion are universal" observes Dr. Haung.
+
+A classroom computer could recognize when a student is becoming confused or bored, Dr. Haung predicts. Then it could modify the lesson, like an effective human instructor. Most human communication is nonverval, including emotional communication, notes Dr. Haung. According to the Facila Feedback Theory of Emotion, muving your facial muscles not only expresses emotions, but also help to produce them. whoever thought that making faces could reveal so much about the scien of emotions.
+
+CONCLUSION
+
+In conclusion i tink that this program fantastic because can know how we feal, it identify human emotions just looking our face, it is a nice system because i can know if one person that a love is sad, happy, angry, etc. i thik that this system is goin to be important in the future.

@@ -1,0 +1,13 @@
+Now, these days computer softwares are able to do so many things, such as sing (Vocaloid), organize our schedule, and even recognize our emotions.
+
+This new software is called Facial Action Coding System and was created by Prof. Thomas Huang, from the University of Illinois, with colaboration of Prof. Hicu Sebe from the University of Amsterdam. These two profesors are experts at developing better ways for humans and computers to comunicate.
+
+The purpose of the Facial Action Coding System is to recognize the subtle facial movements that humans use to express their emotions. The process of creating this new technology began with a 3-D computer model of the human face; all 44 facial muscles were included. With the of psychologists, such as Dr. Paul Eckman. Eckman classified six basic emotions such as: happiness, surprise, anger, disgust, fear, and sadness. Then associated each with characteristic movements of the facial muscles.
+
+Have you wondered if this technology would be useful for a classroom?
+
+It would certantly be useful in some cases, for example, an investigation. Imagine there has been a case of bullying that ended up with suicide. Everyone who is connected to the victim, which is a student, had to be tested with the FACS (Facial Action Coding System) to whether tell if the student was telling the truth. In these kind of cases would be useful.
+
+However, if this techology, the FACS, was used for only classroom purposes the would only be for Pscychology. This is a High School level class, it wouldn't be used for Elemtary or Middle School. Unless the staff of the schools introduces this technology to the kids. Unless there is a study for kids emotions at school when presented in various different situations.
+
+In conclusion, there are many uses for this software but not exactly for classroom uses. The government, the police, investigators, and phisicans may use these to determine many things. Crimes would be sloved by studying the expressions of a suspect in a trial or interogation.

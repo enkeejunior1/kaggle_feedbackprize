@@ -321,7 +321,17 @@ class FeedbackModel(tez.Model):
         mask = torch.einsum('st,s->st', mask, 1 / mask.sum(dim = -1)) # normalized mask
         x = torch.einsum('st,sd->td', mask, x) # scatter pooled vector
         return x
-
+kaggle_feedbackprize
+├─ input
+│    ├─ test
+│    ├─ train
+│ ├─ train.csv
+│ ├─ train_5folds.csv
+├─ fb-sbert-yh
+│ ├─ README.md
+│ ├─ longformer-base-4096
+│ ├─ train_yh.py
+│ ├─ utils_yh.py
 if __name__ == "__main__":
     # setting
     NUM_JOBS = 12

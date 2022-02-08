@@ -1,0 +1,9 @@
+The Facial Action Coding System (FACS)is a recent innovation in facial recognition software. It can deciper what a perosn may be feeling by analysing muscle movements and facial structure. While the technological impact of FACS is revolutionary, can a sytem like it be used in schools to give insight into the emotions of a student? The value of FACS in schools has the ptoential to become great, but as of now, FACS still has many challenges to face in order for it to become a practical and valuable part of the education sytem.
+
+Currently, FACS can only recognize "...six basic emotions-happiness, suprise, anger, disgust, fear, and sadness...". While this abilty is a great acheviment, FACS would have to be able to read many more expressions, such as confusion, boredom, or understanding to become useful in a classroom enviornment.
+
+If implemented in its current state, FACS might look at each student's face and would be able to pinpoint only the happy or suprised students, but typically, the happy students are not be the ones who need help. Without the capabilities to recognize more emotions, FACS would serve little purpose in this setting.
+
+The artical also states that " Your at home PC can't handle the algorithms used to decode Mona Lisa's smile." Many school comtuters are out of date and wouldn't be able to run FACS either. So, in order to correctly use it, a school would have to spend large amounts of money to purchase machines with the computing power to run FACS, an investment that may not pay off for years. This expense would only be made greater by the cost of the software itself.
+
+So, while the Facial Action Coding Sytem has the ability to become an integral part of the education sytem, with its current capabilities, it would seem that FACS is not yet ready to assume the role of a valuable tool in classrooms arcross the country.      

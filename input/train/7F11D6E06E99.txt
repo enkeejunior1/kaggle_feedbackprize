@@ -1,0 +1,13 @@
+Self Drive
+
+Some people think that self driving cars could be the furture and help . Computer cars are cars that drive themselves and steer ,brake and accelerate themselves. One of Google's founders Sergey Brin says "He envisions a future with a public transportation system where fleets of driverless cars form a public transport taxi system" How cool would that be!
+
+Google has cars that can drive by themselves under specific scenario's since 2009. These cars have driven more than half a million miles without any crashes . That sounds great , most people know that car crashes happen very often when people are on the wheel of cars . But these cars are not 100% truly driverless yet , they still alert the driver when they need to take over when dealing with traffic or construction or complicated issues .
+
+Computer cars have tons of sensors for them to be smarter and the driver to be safer . Google has modified a toyota prius that uses position estimating sensors on the left rear wheel , a rotating sensor on the roof ,and video camera in the rear view mirror , four radar sensors , a GPS receiver , and a intertial motion sensor . Also a dubbed LIDAR , it has lazer beams to constanly update the surroundings of the car .
+
+The cars can go up to 25 miles per hour when driving themselves , but they have special touch sensors on the wheel to make sure the driver keeps hold of it
+
+, this means the driver has to be alert and be ready to take over when the car needs assitance going through certain areas like constrution or traffic promblems . GM has seats where when its the drivers turn the seats vibrate to get the drivers attention to let he/she to know its there turn to drive . The google car simply announces when the driver should be prepared to take over and other manufactors are puttuing cameras to watch that the drivers are remaining focused .
+
+some people think that self driving cars could be the future and help . they have tons of sensors to keep you safe , the car alerts you when you need to take control , the computer cars are safe and have drove half a million miles to prove it . so go talk to your friends , your family , and your city hall and tell them why self driving cars are the future .

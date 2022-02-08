@@ -1,0 +1,47 @@
+In the article "Making Mona Lisa Smile," by Nick D'Alto, the author explains a new technology named the Facial Action Coding System which allows computers to identify emotions.
+
+D'Alto uses credible evidence to prove the idea that this new technology is effective and valuable for students.
+
+First, the author introduces the Facial Action Coding System and explains how it works.
+
+D'alto talks about how the computer conducts a 3-D computer model of the human face, including all 44 of the major muscles in the human face.
+
+It recognizes the six basic emotions: happiness, surprise, anger, disgust, fear, and sadness, and coordinates these emotions to the person's facial muscles.
+
+The creator of FACS, who is a psychologist, further explains in detail how these specific different face muscles work.
+
+"Your frontalis pars lateralis muscle (above your eyes) raises your eyebrows when you're surprises."
+
+This quote supports the claim that this new technology is effective by exhibiting how the creator researched all of the human facial muscles.
+
+Next, the author proceeds to talk about how humans perform the same "calculation" in day to day life.
+
+By putting it into every day life, this makes the technology seem less far fetched.
+
+"For instance, you can probably tell how a friend is feeling simply by the look on her face... artists such as Da Vinci studied human anatomy... and his new computer software stores similar anatomical information as electronic code."
+
+This quote expertly supports the claim that FACS is an effective tecnhology by bringing it to the everyday life scale, and using credible evidence to show the efficiency of the anatomical information the computer stores.
+
+Moving forward, now that it has been established that this new technology is effective, the next question brought up is if it is valuable for students.
+
+The author then explains how much value this technology can actually bring to students and how this new technology will be indubitably helpful to students in the classroom.
+
+"A classroom computer could recognize when a student is becoming confused or bored, then it could modify the lesson, like a human instructor."
+
+This excerpt further proves the claim that FACS is valuable for students.
+
+It brings the innovative idea forward and exhibits how it will be effectively used to help students customize their own learning experience.
+
+The author expertly shows how the Facial Action Coding System could supercede the computers in today's society; it could very well be the future.
+
+However, some people may read this article and see a few problems with it.
+
+They may wonder how a computer can analyze everybody's facial expressions, if everybody's facial expressions are slightly different.
+
+Fortunately, the creators have already thought of this problem, and conjured up a solution.
+
+"The facial expressions for each emotion are universal, even though individuals often show varying degrees of expression."
+
+This quote refutes any ideas of doubt about this new technology, and instills faith in the readers that their technology will be valuable.
+
+In conclusion, D'alto expertly uses many pieces of credible evidence to support the claim that FACS will be effective and valuable to students.                

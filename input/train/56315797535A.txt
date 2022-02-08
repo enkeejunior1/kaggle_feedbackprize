@@ -1,0 +1,9 @@
+The usage of Facial Action Coding Systems will change the way learning has been viewed traditionally. Students will no longer be bored or destracted from learning. The requirements are simple, having a face and 44 major facial muscles. simple right? Anyone is able to benefit from FACS.
+
+This software works based on its ability to detect human emotions by detecting an "action unit," which is trigered by the movement of a sertan muscle. Even you do similar things to this software, for example; you might be able to guess the emotion of someon based on their face expresion, right? This software works the same way but in a more accurate level.
+
+This technology would benefit classrooms the most, for example; if the software detects a sad emotion ond the user when learning the software could make the lessong more intersting and making the student stay on track with others.
+
+FACS could also alert teachers of students that could be having problems outside of school based on their emotions. This software can detect "diferent types of emotions" like happines, suprise, anger, disgust, fear, and sadnes as Dr. Eckman stated.
+
+In conclusion this software would precent many benefits for schools and users. this would also make better and more interestign ways of learning for students.       
