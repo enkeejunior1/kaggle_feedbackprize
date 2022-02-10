@@ -381,7 +381,8 @@ class EarlyStopping(Callback):
                 with torch.no_grad():
                     data['ids'] = data['ids'].to(model.device)
                     data['mask'] = data['mask'].to(model.device)
-                    data['input_type_list'] = [s.to(model.device) for s in data['input_type_list']]
+                    if self.args.sbert:
+                        data['input_type_list'] = [s.to(model.device) for s in data['input_type_list']]
                     
                     output, _, _ = model(**data)
                     output = output.cpu().detach().numpy()
