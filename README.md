@@ -11,11 +11,11 @@
     │    ├─ train.csv
     │    └─ train_5folds.csv
     │
-    ├─ fb-sbert-yh
-    │    ├─ README.md
-    │    ├─ longformer-base-4096
-    │    ├─ train_yh.py
-    │    └─ utils_yh.py
+    └─ fb-sbert-yh
+         ├─ README.md
+         ├─ longformer-base-4096
+         ├─ train_yh.py
+         └─ utils_yh.py
 
 
 확인 했다면, 이하 코드를 실행합니다.

@@ -1,6 +1,7 @@
 import copy
 import warnings
 import os
+import json
 
 import numpy as np
 import pandas as pd
@@ -16,7 +17,7 @@ import re
 import nltk
 
 from sklearn.model_selection import KFold
-from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
+# from iterstrat.ml_stratifiers import MultilabelStratifiedKFold
 
 target_id_map = {
     "B-Lead": 0,
@@ -116,7 +117,6 @@ def _prepare_training_data_helper(args, tokenizer, df, train_ids):
         sample["input_labels"] = input_labels
         training_samples.append(sample)
     return training_samples
-
 
 def prepare_training_data(df, tokenizer, args, num_jobs):
     training_samples = []
@@ -520,6 +520,9 @@ class EarlyStopping(Callback):
         if epoch_score not in [-np.inf, np.inf, -np.nan, np.nan]:
             print("Validation score improved ({} --> {}). Saving model!".format(self.val_score, epoch_score))
             model.save(self.model_path, weights_only=self.save_weights_only)
+            self.args.cv_score = epoch_score
+            with open(os.path.join(self.args.output, f"{self.args.model}-{self.args.time}.json"), 'w') as fp:
+                json.dump(vars(self.args), fp)
         self.val_score = epoch_score
 
 #!# test code
@@ -643,3 +646,61 @@ def _postprocess_sent_idx(sent_idx_list, processed_idx_list):
                 postprocess_sent_idx_list[i] -= 1
         
     return postprocess_sent_idx_list
+
+
+def prepare_test_data(df, tokenizer, args):
+    test_ids = df["id"].unique()
+    test_samples = []
+    for idx in test_ids:
+        filename = os.path.join(args.input, "test", idx + ".txt")
+        with open(filename, "r") as f:
+            text = f.read()
+
+        encoded_text = tokenizer.encode_plus(
+            text,
+            add_special_tokens=False,
+            return_offsets_mapping=True,
+        )
+        
+        input_ids = encoded_text["input_ids"]
+        input_labels = copy.deepcopy(input_ids)
+        offset_mapping = encoded_text["offset_mapping"]
+
+        for k in range(len(input_labels)):
+            input_labels[k] = "O"
+
+        sample = {
+            "id": idx,
+            "input_ids": input_ids,
+            "text": text,
+            "offset_mapping": offset_mapping,
+        }
+        
+        # input_type_ids 만들기 
+        #!# test code
+        if args.sbert:
+            input_type_ids_list = []
+            processed_text, processed_idx_list = _replace_awkend(text) # preprocessing for nltk module
+            start_idx_list, end_idx_list = _extract_sentence_idx(processed_text) # extract sentence index
+            start_idx_list = _postprocess_sent_idx(start_idx_list, processed_idx_list) # return to index before preprocessing
+            end_idx_list = _postprocess_sent_idx(end_idx_list, processed_idx_list) # return to index before preprocessing
+
+            for start_idx, end_idx in zip(start_idx_list, end_idx_list):
+                text_type_ids = [0] * len(text)
+                text_type_ids[start_idx:end_idx] = [1] * (end_idx - start_idx)
+
+                input_type_ids = []
+                for i, (offset1, offset2) in enumerate(encoded_text["offset_mapping"]):
+                    if any(text_type_ids[offset1:offset2]): # 1개의 text 라도 0 이외의 값
+                        if len(text[offset1:offset2].split()) > 0: #!# 1개의 token 은 include
+                            input_type_ids.append(1)
+                        else:
+                            input_type_ids.append(0)
+                    else:
+                        input_type_ids.append(0)
+
+                assert len(input_type_ids) == len(encoded_text["offset_mapping"])
+                input_type_ids_list.append(input_type_ids)
+            sample["input_type_ids"] = input_type_ids_list
+        test_samples.append(sample)
+    return test_samples

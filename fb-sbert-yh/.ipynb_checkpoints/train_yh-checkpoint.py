@@ -326,8 +326,6 @@ if __name__ == "__main__":
     # setting
     NUM_JOBS = 12
     args = parse_args()
-    with open(os.path.join(args.output, f"{args.model}-{args.time}.json"), 'w') as fp:
-        json.dump(vars(args), fp)
     pprint(vars(args))
     seed_everything(args.seed)
     os.makedirs(args.output, exist_ok=True)
