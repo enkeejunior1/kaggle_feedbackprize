@@ -17,7 +17,13 @@ from torch.nn import functional as F
 from torch.utils.data import Dataset, DataLoader
 from transformers import AdamW, AutoConfig, AutoModel, AutoTokenizer, get_cosine_schedule_with_warmup
 
+from data import *
+from preprocess import *
 from utils_yh import *
+from model_yh import *
+
+import wandb
+wandb.init(project="fbprize", entity="enkeejunior1")
 
 warnings.filterwarnings("ignore")
 
@@ -42,11 +48,29 @@ def parse_args():
     parser.add_argument('--sbert', dest='sbert', action='store_true')
     parser.add_argument('--no-sbert', dest='sbert', action='store_false')
     parser.set_defaults(sbert=False)
+    
+    parser.add_argument('--aug_mlm', dest='aug_mlm', action='store_true')
+    parser.add_argument('--no-aug_mlm', dest='aug_mlm', action='store_false')
+    parser.set_defaults(aug_mlm=False)
+    parser.add_argument("--aug_model", type=str, default='mlm-longformer-base-4096', required=False)
+    
+    parser.add_argument('--post_process', dest='post_process', action='store_true')
+    parser.add_argument('--no-post_process', dest='post_process', action='store_false')
+    parser.set_defaults(post_process=False)
+    
+    parser.add_argument('--use_checkpoint', dest='use_checkpoint', action='store_true')
+    parser.add_argument('--no-use_checkpoint', dest='use_checkpoint', action='store_false')
+    parser.set_defaults(use_checkpoint=False)
 
+    parser.add_argument("--model_structure", type=str, default="FeedbackModel", required=False)
+    parser.add_argument("--model_name", type=str, default="default", required=False)
+    
     parser.add_argument("--lr", type=float, default=1e-5, required=False)
     parser.add_argument("--kfold", type=int, default=5, required=False)
     parser.add_argument("--seed", type=int, default=24, required=False)
     
+    parser.add_argument("--device_num", type=int, default=0, required=False)
+    parser.add_argument("--num_jobs", type=int, default=12, required=False)
     parser.add_argument("--output", type=str, default="../model", required=False)
     parser.add_argument("--input", type=str, default="../input", required=False)
     parser.add_argument("--max_len", type=int, default=1024, required=False)
@@ -57,276 +81,238 @@ def parse_args():
     parser.add_argument("--time", type=str, default=str(time.clock_gettime(time.CLOCK_MONOTONIC_RAW)), required=False)
     return parser.parse_args()
 
-class FeedbackDataset(Dataset):
-    def __init__(self, samples, max_len, tokenizer, args):
-        super(FeedbackDataset, self).__init__()
-        self.samples = samples
-        self.max_len = max_len
+class EarlyStopping(Callback):
+    def __init__(
+        self,
+        model_path,
+        valid_df,
+        valid_samples,
+        batch_size,
+        tokenizer,
+        args,
+        patience=3,
+        mode="max",
+        delta=0.001,
+        save_weights_only=True,
+    ):
+        self.patience = patience
+        self.counter = 0
+        self.mode = mode
+        self.best_score = None
+        self.early_stop = False
+        self.delta = delta
+        self.save_weights_only = save_weights_only
+        self.model_path = model_path
+        self.valid_samples = valid_samples
+        self.batch_size = batch_size
+        self.valid_df = valid_df
         self.tokenizer = tokenizer
-        self.length = len(samples)
         self.args = args
 
-    def __len__(self):
-        return self.length
-
-    def __getitem__(self, idx):
-        input_ids = self.samples[idx]["input_ids"]
-        input_labels = self.samples[idx]["input_labels"]
-        input_labels = [target_id_map[x] for x in input_labels]
-        id_ = self.samples[idx]['id']
-        
-        other_label_id = target_id_map["O"]
-        padding_label_id = target_id_map["PAD"]
-
-        # add start token id to the input_ids
-        input_ids = [self.tokenizer.cls_token_id] + input_ids
-        input_labels = [other_label_id] + input_labels
-        
-        #!# 전부 max_len 로 truncate, padding 하기
-        if len(input_ids) > self.max_len - 1:
-            input_ids = input_ids[: self.max_len - 1]
-            input_labels = input_labels[: self.max_len - 1]
+        if self.mode == "min":
+            self.val_score = np.Inf
+        else:
+            self.val_score = -np.Inf
             
-        # add end token id to the input_ids
-        input_ids = input_ids + [self.tokenizer.sep_token_id]
-        input_labels = input_labels + [other_label_id]
+    def on_epoch_end(self, model):
+        model.eval()
+        valid_dataset = FeedbackDataset(self.valid_samples, 4096, self.tokenizer, args = self.args)
+        collate = TrainCollate(self.tokenizer, self.args)
         
-        attention_mask = [1] * len(input_ids)
-        
-        padding_length = self.max_len - len(input_ids)
-        if padding_length > 0:
-            if self.tokenizer.padding_side == "right":
-                input_ids = input_ids + [self.tokenizer.pad_token_id] * padding_length
-                input_labels = input_labels + [padding_label_id] * padding_length
-                attention_mask = attention_mask + [0] * padding_length
-            else:
-                input_ids = [self.tokenizer.pad_token_id] * padding_length + input_ids
-                input_labels = [padding_label_id] * padding_length + input_labels
-                attention_mask = [0] * padding_length + attention_mask
-        
-        if args.sbert:
-            input_type_ids = self.samples[idx]["input_type_ids"]
-            input_type_ids = [[0] + type_ids for type_ids in input_type_ids]
-            input_type_ids = [type_ids[: self.max_len - 1] for type_ids in input_type_ids]
-            input_type_ids = [type_ids + [0] for type_ids in input_type_ids]
+        import psutil
+        n_jobs = psutil.cpu_count()
             
-            if padding_length > 0:
-                if self.tokenizer.padding_side == "right":
-                    input_type_ids = [type_ids + [0] * padding_length for type_ids in input_type_ids]
+        data_loader = torch.utils.data.DataLoader(
+            valid_dataset, 
+            batch_size=self.args.valid_batch_size, 
+            num_workers=n_jobs, 
+            collate_fn=collate, 
+            pin_memory=True
+        )
+        
+        @torch.no_grad()
+        def predict(data_loader, model):
+            tk0 = tqdm(data_loader, total = len(data_loader))
+            for _, data in enumerate(tk0):
+                data['ids'] = data['ids'].to(model.device)
+                data['mask'] = data['mask'].to(model.device)
+                data['targets'] = data['targets'].to(model.device)
+                if self.args.sbert:
+                    data['input_type_list'] = [s.to(model.device) for s in data['input_type_list']]
+
+                output, _, metric = model(**data)
+                output = output.cpu().detach().numpy()
+                yield output, metric
+            tk0.close()
+        preds_iter = predict(data_loader, model)
+        
+        # compute submission score
+        final_preds = []
+        final_scores = []
+        final_f1 = []
+        for preds, f1 in preds_iter:
+            pred_class = np.argmax(preds, axis=2)
+            pred_scrs = np.max(preds, axis=2)
+            for pred, pred_scr in zip(pred_class, pred_scrs):
+                final_preds.append(pred.tolist())
+                final_scores.append(pred_scr.tolist())
+            final_f1.append(f1['f1'])
+        f1 = np.mean(final_f1)
+        wandb.log({"f1" : f1})
+
+        for j in range(len(self.valid_samples)):
+            tt = [id_target_map[p] for p in final_preds[j][1:]]
+            tt_score = final_scores[j][1:]
+            self.valid_samples[j]["preds"] = tt
+            self.valid_samples[j]["pred_scores"] = tt_score
+
+        submission = []
+        min_thresh = {
+            "Lead": 9,
+            "Position": 5,
+            "Evidence": 14,
+            "Claim": 3,
+            "Concluding Statement": 11,
+            "Counterclaim": 6,
+            "Rebuttal": 4,
+        }
+        proba_thresh = {
+            "Lead": 0.7,
+            "Position": 0.55,
+            "Evidence": 0.65,
+            "Claim": 0.55,
+            "Concluding Statement": 0.7,
+            "Counterclaim": 0.5,
+            "Rebuttal": 0.55,
+        }
+
+        for _, sample in enumerate(self.valid_samples):
+            preds = sample["preds"]
+            offset_mapping = sample["offset_mapping"]
+            sample_id = sample["id"]
+            sample_text = sample["text"]
+            sample_pred_scores = sample["pred_scores"]
+
+            # pad preds to same length as offset_mapping
+            if len(preds) < len(offset_mapping):
+                preds = preds + ["O"] * (len(offset_mapping) - len(preds))
+                sample_pred_scores = sample_pred_scores + [0] * (len(offset_mapping) - len(sample_pred_scores))
+
+            idx = 0
+            phrase_preds = []
+            while idx < len(offset_mapping):
+                start, _ = offset_mapping[idx]
+                if preds[idx] != "O":
+                    label = preds[idx][2:]
                 else:
-                    print('TODO')
-                    raise ValueError('padding side is left')
+                    label = "O"
+                phrase_scores = []
+                phrase_scores.append(sample_pred_scores[idx])
+                idx += 1
+                while idx < len(offset_mapping):
+                    if label == "O":
+                        matching_label = "O"
+                    else:
+                        matching_label = f"I-{label}"
+                    if preds[idx] == matching_label:
+                        _, end = offset_mapping[idx]
+                        phrase_scores.append(sample_pred_scores[idx])
+                        idx += 1
+                    else:
+                        break
+                if "end" in locals():
+                    phrase = sample_text[start:end]
+                    phrase_preds.append((phrase, start, end, label, phrase_scores))
 
-            return {
-            "ids": torch.tensor(input_ids, dtype=torch.long),
-            "input_type_list": torch.tensor(input_type_ids, dtype=torch.long),
-            "mask": torch.tensor(attention_mask, dtype=torch.long),
-            "targets": torch.tensor(input_labels, dtype=torch.long),
-            # "id" : id_
-            }
+            temp_df = []
+            for phrase_idx, (phrase, start, end, label, phrase_scores) in enumerate(phrase_preds):
+                word_start = len(sample_text[:start].split())
+                word_end = word_start + len(sample_text[start:end].split())
+                word_end = min(word_end, len(sample_text.split()))
+                ps = " ".join([str(x) for x in range(word_start, word_end)])
+                if label != "O":
+                    if sum(phrase_scores) / len(phrase_scores) >= proba_thresh[label]:
+                        temp_df.append((sample_id, label, ps))
+
+            temp_df = pd.DataFrame(temp_df, columns=["id", "class", "predictionstring"])
+            submission.append(temp_df)
+
+        submission = pd.concat(submission).reset_index(drop=True)
+        submission["len"] = submission.predictionstring.apply(lambda x: len(x.split()))
+
+        def threshold(df):
+            df = df.copy()
+            for key, value in min_thresh.items():
+                index = df.loc[df["class"] == key].query(f"len<{value}").index
+                df.drop(index, inplace=True)
+            return df
+
+        submission = threshold(submission)
+        submission = submission.drop(columns=["len"]) # drop len
+        scr = score_feedback_comp(submission, self.valid_df, return_class_scores=True)
+        print(f'cv_score : {scr} \n\n cv_f1 : {f1}')
         
+        model.train()
+        if self.args.post_process:
+            epoch_score = scr[0]            
         else:
-            return {
-            "ids": torch.tensor(input_ids, dtype=torch.long),
-            "mask": torch.tensor(attention_mask, dtype=torch.long),
-            "targets": torch.tensor(input_labels, dtype=torch.long),
-            # "id" : id_
-            }
-        
-class FeedbackModel(tez.Model):
-    def __init__(self, model_name, num_train_steps, learning_rate, num_labels, steps_per_epoch, args):
-        super().__init__()
-        self.learning_rate = learning_rate
-        self.model_name = model_name
-        self.num_train_steps = num_train_steps
-        self.num_labels = num_labels
-        self.steps_per_epoch = steps_per_epoch
-        self.step_scheduler_after = "batch"
-        self.args = args
-
-        hidden_dropout_prob: float = 0.1
-        layer_norm_eps: float = 1e-7
-
-        config = AutoConfig.from_pretrained(model_name)
-
-        config.update(
-            {
-                "output_hidden_states": True,
-                "hidden_dropout_prob": hidden_dropout_prob,
-                "layer_norm_eps": layer_norm_eps,
-                "add_pooling_layer": False,
-                "num_labels": self.num_labels,
-            }
-        )
-        self.transformer = AutoModel.from_pretrained(model_name, config=config)
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.dropout1 = nn.Dropout(0.1)
-        self.dropout2 = nn.Dropout(0.2)
-        self.dropout3 = nn.Dropout(0.3)
-        self.dropout4 = nn.Dropout(0.4)
-        self.dropout5 = nn.Dropout(0.5)
-        self.output = nn.Linear(config.hidden_size, self.num_labels)
-        
-        if self.args.sbert:
-            self.fc_layer_start = nn.Linear(config.hidden_size, self.num_labels)
-            self.fc_layer_sent  = nn.Linear(config.hidden_size, self.num_labels)
-            self.sbert_weight = nn.Parameter(torch.rand(2)).softmax(dim = -1)
-
-    def fetch_optimizer(self):
-        param_optimizer = list(self.named_parameters())
-        no_decay = ["bias", "LayerNorm.bias"]
-        optimizer_parameters = [
-            {
-                "params": [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
-                "weight_decay": 0.01,
-            },
-            {
-                "params": [p for n, p in param_optimizer if any(nd in n for nd in no_decay)],
-                "weight_decay": 0.0,
-            },
-        ]
-        opt = AdamW(optimizer_parameters, lr=self.learning_rate)
-        return opt
-
-    def fetch_scheduler(self):
-        sch = get_cosine_schedule_with_warmup(
-            self.optimizer,
-            num_warmup_steps=int(0.1 * self.num_train_steps),
-            num_training_steps=self.num_train_steps,
-            num_cycles=1,
-            last_epoch=-1,
-        )
-        return sch
-
-    def loss(self, outputs, targets, attention_mask):
-        loss_fct = nn.CrossEntropyLoss()
-
-        active_loss = attention_mask.view(-1) == 1
-        active_logits = outputs.view(-1, self.num_labels)
-        true_labels = targets.view(-1)
-        outputs = active_logits.argmax(dim=-1)
-        idxs = np.where(active_loss.cpu().numpy() == 1)[0]
-        active_logits = active_logits[idxs]
-        true_labels = true_labels[idxs].to(torch.long)
-
-        loss = loss_fct(active_logits, true_labels)
-        return loss
-
-    def monitor_metrics(self, outputs, targets, attention_mask):
-        active_loss = (attention_mask.view(-1) == 1).cpu().numpy()
-        active_logits = outputs.view(-1, self.num_labels)
-        true_labels = targets.view(-1).cpu().numpy()
-        outputs = active_logits.argmax(dim=-1).cpu().numpy()
-        idxs = np.where(active_loss == 1)[0]
-        f1_score = metrics.f1_score(true_labels[idxs], outputs[idxs], average="macro")
-        return {"f1": f1_score}
-
-    def forward(self, ids, mask, input_type_list=None, token_type_ids=None, targets=None):
-        if token_type_ids:
-            transformer_out = self.transformer(ids, mask, token_type_ids)
+            epoch_score = f1
+            
+        if self.mode == "min":
+            score = -1.0 * epoch_score
         else:
-            transformer_out = self.transformer(ids, mask)
-        sequence_output = transformer_out.last_hidden_state
-        sequence_output = self.dropout(sequence_output)
+            score = np.copy(epoch_score)
 
-        logits1 = self.output(self.dropout1(sequence_output))
-        logits2 = self.output(self.dropout2(sequence_output))
-        logits3 = self.output(self.dropout3(sequence_output))
-        logits4 = self.output(self.dropout4(sequence_output))
-        logits5 = self.output(self.dropout5(sequence_output))
+        if self.best_score is None:
+            self.best_score = score
+            self.save_checkpoint(epoch_score, model)
+        elif score < self.best_score + self.delta:
+            self.counter += 1
+            print("EarlyStopping counter: {} out of {}".format(self.counter, self.patience))
+            if self.counter >= self.patience:
+                model.model_state = enums.ModelState.END
+        else:
+            self.best_score = score
+            self.save_checkpoint(epoch_score, model)
+            self.counter = 0
 
-        logits = (logits1 + logits2 + logits3 + logits4 + logits5) / 5
+    def save_checkpoint(self, epoch_score, model):
+        if epoch_score not in [-np.inf, np.inf, -np.nan, np.nan]:
+            print("Validation score improved ({} --> {}). Saving model!".format(self.val_score, epoch_score))
+            model.save(self.model_path, weights_only=self.save_weights_only)
+            self.args.cv_score = epoch_score
+            with open(os.path.join(self.args.output, f"{self.args.model}-{self.args.time}.json"), 'w') as fp:
+                json.dump(vars(self.args), fp)
+        self.val_score = epoch_score
         
-        if self.args.sbert:
-            logits_sbert = self.sbert_output(sequence_output, input_type_list)
-            logits = self.sbert_weight[0] * logits + self.sbert_weight[1] * logits_sbert
+def get_checkpoint_time_args(args):
+    args_path = os.listdir('../model')
+    args_path = list(filter(lambda x: '.json' in x, args_path))
+
+    args_list = []
+    for path in args_path:
+        with open(os.path.join('../model', path), 'r') as fp:
+            args = json.load(fp)
+        args_list.append(args)
         
-        logits = torch.softmax(logits, dim=-1)
-        loss = 0
-
-        if targets is not None:
-            loss1 = self.loss(logits1, targets, attention_mask=mask)
-            loss2 = self.loss(logits2, targets, attention_mask=mask)
-            loss3 = self.loss(logits3, targets, attention_mask=mask)
-            loss4 = self.loss(logits4, targets, attention_mask=mask)
-            loss5 = self.loss(logits5, targets, attention_mask=mask)
-            
-            if self.args.sbert:
-                loss_sbert = self.loss(logits_sbert, targets, attention_mask=mask)
-                loss = (loss1 + loss2 + loss3 + loss4 + loss5 + loss_sbert) / 6
-            
-            else:
-                loss = (loss1 + loss2 + loss3 + loss4 + loss5) / 5
-            
-            f1_1 = self.monitor_metrics(logits1, targets, attention_mask=mask)["f1"]
-            f1_2 = self.monitor_metrics(logits2, targets, attention_mask=mask)["f1"]
-            f1_3 = self.monitor_metrics(logits3, targets, attention_mask=mask)["f1"]
-            f1_4 = self.monitor_metrics(logits4, targets, attention_mask=mask)["f1"]
-            f1_5 = self.monitor_metrics(logits5, targets, attention_mask=mask)["f1"]
-            f1 = (f1_1 + f1_2 + f1_3 + f1_4 + f1_5) / 5
-            metric = {"f1": f1}
-            return logits, loss, metric
-
-        return logits, loss, {}
+    args_list = filter(lambda x: x.fold == args.fold, args_list)
+    # args_list = # 같은 fold 중에서 f1 score 가 가장 높은 args 만 추출, hyper-parameter
+    assert len(args_list) == 1
     
-    def sbert_output(self, sequence_output, input_type_list):
-        batch_size, seq_len, d_model = sequence_output.shape
-        logits = torch.zeros(batch_size, seq_len, self.num_labels).to(sequence_output.device)
-        
-        start_list, sent_list = self._get_sent_idx(input_type_list, seq_len)
-        for i, (start, sent) in enumerate(zip(start_list, sent_list)):
-            start_token = self._masked_pool(sequence_output[i], start.type(torch.float))
-            sent_token = self._masked_pool(sequence_output[i], sent.type(torch.float))
-            
-            logits[i] = self.fc_layer_start(start_token)
-            logits[i] = self.fc_layer_sent(sent_token)
-            
-        return logits
+    args.time = args_list[0]['time']
+    return args
     
-    def _get_sent_idx(self, input_type_list, seq_len):
-        start_list = []
-        sent_list = []
-        
-        for type_ in input_type_list:
-            _, i = torch.max(type_, dim = 1)
-            start = F.one_hot(i, num_classes = type_.size(-1))
-            sent = type_ - start
-            start_list.append(start)
-            sent_list.append(sent)
-        
-        return start_list, sent_list
     
-    def _masked_pool(self, x, mask):
-        '''Parameters
-            x : BERT 를 지나온 encoded vector
-            mask : 유효한 token 을 1 로 표기한 mask.
-                ex) [0,0,0,1,1,1,0,0,0]
-        '''
-        assert mask.dtype == torch.float # for einsum operation
-        x = torch.einsum('st,td->std', mask, x) # extract encoded vector
-        x = reduce(x, 's t d -> t d', 'sum') # combine encoded vector by summation
-        return x
-    
-    def _mean_pool_by_mask(self, x, mask):
-        '''
-            Parameters
-                x : BERT 를 지나온 encoded vector
-                mask : 유효한 token 을 1 로 표기한 mask.
-                    ex) [0,0,0,1,1,1,0,0,0]
-            Returns
-                x : mask 에 해당하는 enc_vec 의 평균
-        '''
-        assert mask.dtype == torch.float # for einsum operation
-        x = torch.einsum('st,td->sd', mask, x) # extract encoded vector
-        mask = torch.einsum('st,s->st', mask, 1 / mask.sum(dim = -1)) # normalized mask
-        x = torch.einsum('st,sd->td', mask, x) # scatter pooled vector
-        return x
-
 if __name__ == "__main__":
     # setting
-    NUM_JOBS = 12
     args = parse_args()
+    NUM_JOBS = args.num_jobs
+    
+    if args.use_checkpoint:
+        args = get_checkpoint_time_args(args)
+    
     pprint(vars(args))
+    wandb.config = {k: v for k, v in vars(args).items()}
     seed_everything(args.seed)
     os.makedirs(args.output, exist_ok=True)
     
@@ -345,7 +331,7 @@ if __name__ == "__main__":
         tokenizer = AutoTokenizer.from_pretrained(args.model)
     except:
         print('download hf model, tokenizer')
-        download_hfmodel('allenai/longformer-base-4096', args.model) #!# todo : use args.hf_model
+        download_hfmodel(f'allenai/{args.model}', args.model) #!# todo : use args.hf_model
         tokenizer = AutoTokenizer.from_pretrained(args.model)
     
     # preprocess
@@ -355,12 +341,13 @@ if __name__ == "__main__":
     else:
         training_samples = prepare_training_data(train_df, tokenizer, args, num_jobs=NUM_JOBS)
         valid_samples = prepare_training_data(valid_df, tokenizer, args, num_jobs=NUM_JOBS)
+        
     train_dataset = FeedbackDataset(training_samples, args.max_len, tokenizer, args)
 
     num_train_steps = int(len(train_dataset) / args.batch_size / args.accumulation_steps * args.epochs)
     print(num_train_steps)
 
-    model = FeedbackModel(
+    model = globals()[f'{args.model_structure}'](
         model_name=args.model,
         num_train_steps=num_train_steps,
         learning_rate=args.lr,
@@ -374,7 +361,7 @@ if __name__ == "__main__":
         valid_df=valid_df,
         valid_samples=valid_samples,
         batch_size=args.valid_batch_size,
-        patience=5,
+        patience=3,
         mode="max",
         delta=0.001,
         save_weights_only=True,
@@ -388,7 +375,7 @@ if __name__ == "__main__":
     model.fit(
         train_dataset,
         train_bs=args.batch_size,
-        device="cuda",
+        device=f'cuda:{args.device_num}',
         epochs=args.epochs,
         callbacks=[es],
         fp16=True,
